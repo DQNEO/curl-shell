@@ -1,3 +1,11 @@
+# curl-shell
+
+interactive shell for curl
+
+# Name
+
+curl-shell(1)
+
 # Usage
 
 ```
