@@ -70,7 +70,10 @@ func filterInput(r rune) (rune, bool) {
 	return r, true
 }
 
-func processLine(l *readline.Instance, setPasswordCfg *readline.Config, line string) {
+const RetContinue = 0
+const RetExit = 1
+
+func processLine(l *readline.Instance, setPasswordCfg *readline.Config, line string) int {
 	switch {
 	case strings.HasPrefix(line, "mode "):
 		switch line[5:] {
@@ -118,7 +121,7 @@ func processLine(l *readline.Instance, setPasswordCfg *readline.Config, line str
 			}
 		}()
 	case line == "bye":
-		return
+		return RetExit
 	case line == "sleep":
 		log.Println("sleep 4 second")
 		time.Sleep(4 * time.Second)
@@ -127,6 +130,7 @@ func processLine(l *readline.Instance, setPasswordCfg *readline.Config, line str
 		log.Println("command not found:", strconv.Quote(line))
 	}
 
+	return RetContinue
 }
 
 const Prompt = "\033[31mcurl-shell>\033[0m "
@@ -169,6 +173,9 @@ func main() {
 		}
 
 		line = strings.TrimSpace(line)
-		processLine(l,setPasswordCfg, line)
+		ret := processLine(l,setPasswordCfg, line)
+		if ret == RetExit {
+			return
+		}
 	}
 }
