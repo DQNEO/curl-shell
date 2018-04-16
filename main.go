@@ -75,21 +75,6 @@ const RetExit = 1
 
 func processLine(l *readline.Instance, setPasswordCfg *readline.Config, line string) int {
 	switch {
-	case strings.HasPrefix(line, "mode "):
-		switch line[5:] {
-		case "vi":
-			l.SetVimMode(true)
-		case "emacs":
-			l.SetVimMode(false)
-		default:
-			println("invalid mode:", line[5:])
-		}
-	case line == "mode":
-		if l.IsVimMode() {
-			println("current mode: vim")
-		} else {
-			println("current mode: emacs")
-		}
 	case line == "login":
 		pswd, err := l.ReadPassword("please enter your password: ")
 		if err != nil {
@@ -109,17 +94,6 @@ func processLine(l *readline.Instance, setPasswordCfg *readline.Config, line str
 			break
 		}
 		l.SetPrompt(line[10:])
-	case strings.HasPrefix(line, "say"):
-		line := strings.TrimSpace(line[3:])
-		if len(line) == 0 {
-			log.Println("say what?")
-			break
-		}
-		go func() {
-			for range time.Tick(time.Second) {
-				log.Println(line)
-			}
-		}()
 	case line == "bye":
 		return RetExit
 	case line == "sleep":
