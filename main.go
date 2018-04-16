@@ -11,7 +11,7 @@ import (
 	"github.com/chzyer/readline"
 )
 
-func usage(w io.Writer) {
+func help(w io.Writer) {
 	io.WriteString(w, "commands:\n")
 	io.WriteString(w, completer.Tree("    "))
 }
@@ -81,7 +81,7 @@ func processLine(l *readline.Instance, line string) int {
 		}
 		println("you enter:", strconv.Quote(string(pswd)))
 	case line == "help":
-		usage(l.Stderr())
+		help(l.Stderr())
 	case strings.HasPrefix(line, "setprompt"):
 		if len(line) <= 10 {
 			log.Println("setprompt <prompt>")
