@@ -70,6 +70,20 @@ func filterInput(r rune) (rune, bool) {
 	return r, true
 }
 
+func parseLine(line string) (string, string, string){
+	words := []string{"","",""}
+	words = strings.Split(line, " ")
+	if len(words) == 1 {
+		return words[0], "", ""
+	} else if len(words) == 2 {
+		return words[0], words[1], ""
+	} else if len(words) == 3 {
+		return words[0],words[1],words[2]
+	} else {
+		return words[0],words[1],words[2]
+	}
+}
+
 func processLine(l *readline.Instance, setPasswordCfg *readline.Config, line string) {
 	switch {
 	case strings.HasPrefix(line, "mode "):
