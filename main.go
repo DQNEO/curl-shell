@@ -128,10 +128,14 @@ func processLine(l *readline.Instance, setPasswordCfg *readline.Config, line str
 	}
 
 }
+
+const Prompt = "\033[31mcurl-shell>\033[0m "
+const HistoryFile = "/tmp/curl-shell.history"
+
 func main() {
 	l, err := readline.NewEx(&readline.Config{
-		Prompt:          "\033[31m»\033[0m ",
-		HistoryFile:     "/tmp/readline.tmp",
+		Prompt:          Prompt,
+		HistoryFile:     HistoryFile,
 		AutoComplete:    completer,
 		InterruptPrompt: "^C",
 		EOFPrompt:       "exit",
