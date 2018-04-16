@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -73,7 +72,7 @@ func filterInput(r rune) (rune, bool) {
 const RetContinue = 0
 const RetExit = 1
 
-func processLine(l *readline.Instance, setPasswordCfg *readline.Config, line string) int {
+func processLine(l *readline.Instance, line string) int {
 	switch {
 	case line == "login":
 		pswd, err := l.ReadPassword("please enter your password: ")
@@ -83,11 +82,6 @@ func processLine(l *readline.Instance, setPasswordCfg *readline.Config, line str
 		println("you enter:", strconv.Quote(string(pswd)))
 	case line == "help":
 		usage(l.Stderr())
-	case line == "setpassword":
-		pswd, err := l.ReadPasswordWithConfig(setPasswordCfg)
-		if err == nil {
-			println("you set:", strconv.Quote(string(pswd)))
-		}
 	case strings.HasPrefix(line, "setprompt"):
 		if len(line) <= 10 {
 			log.Println("setprompt <prompt>")
@@ -126,13 +120,6 @@ func main() {
 	}
 	defer l.Close()
 
-	setPasswordCfg := l.GenPasswordConfig()
-	setPasswordCfg.SetListener(func(line []rune, pos int, key rune) (newLine []rune, newPos int, ok bool) {
-		l.SetPrompt(fmt.Sprintf("Enter password(%v): ", len(line)))
-		l.Refresh()
-		return nil, 0, false
-	})
-
 	log.SetOutput(l.Stderr())
 	for {
 		line, err := l.Readline()
@@ -147,7 +134,7 @@ func main() {
 		}
 
 		line = strings.TrimSpace(line)
-		ret := processLine(l,setPasswordCfg, line)
+		ret := processLine(l, line)
 		if ret == RetExit {
 			return
 		}
