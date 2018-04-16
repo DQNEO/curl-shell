@@ -124,7 +124,7 @@ func processLine(l *readline.Instance, setPasswordCfg *readline.Config, line str
 		time.Sleep(4 * time.Second)
 	case line == "":
 	default:
-		log.Println("you said:", strconv.Quote(line))
+		log.Println("command not found:", strconv.Quote(line))
 	}
 
 }
