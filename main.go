@@ -84,8 +84,36 @@ func parseLine(line string) (string, string, string){
 	}
 }
 
+func cmdGet(path string) {
+	println("GET " + path)
+}
+
+func cmdDelete(path string) {
+	println("GET " + path)
+}
+
+func cmdPost(path string, body string) {
+	println("curl -X POST " + path + " -d " + body)
+}
+
+func cmdPut(path string, body string) {
+	println("curl -X PUT " + path + " -d " + body)
+}
+
 func processLine(l *readline.Instance, setPasswordCfg *readline.Config, line string) {
+	cmd, arg1, arg2 := parseLine(line)
+	log.Printf("%s:%s:%s", cmd,arg1,arg2)
 	switch {
+	case cmd == "get":
+		cmdGet(arg1)
+	case cmd == "delete":
+		cmdDelete(arg1)
+	case cmd == "post":
+		cmdPost(arg1, arg2)
+		println("POST ")
+	case cmd == "put":
+		cmdPut(arg1, arg2)
+		println("PUT ")
 	case strings.HasPrefix(line, "mode "):
 		switch line[5:] {
 		case "vi":
