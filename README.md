@@ -8,9 +8,11 @@ curl-shell(1)
 
 # Usage
 
+Basic Usage
+
 ```
 $ curl-shell
-> set-base-url https://httpbin.org/
+> base-url https://httpbin.org/
 > get /get
 {
   "args": {},
@@ -22,9 +24,22 @@ $ curl-shell
   },
   "url": "https://httpbin.org/get"
 }
+```
+
+POST, PUT, DELETE
+
+```
 > post /post '{"foo":"bar"}'
 
 > put /put '{"foo":"bar"}'
 
 > delete /delete
 ```
+
+Set header
+
+```
+> header User-Agent 'My Super Agent'
+```
+
+
