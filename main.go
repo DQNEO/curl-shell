@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -12,7 +11,7 @@ import (
 	"github.com/chzyer/readline"
 )
 
-func usage(w io.Writer) {
+func help(w io.Writer) {
 	io.WriteString(w, "commands:\n")
 	io.WriteString(w, completer.Tree("    "))
 }
@@ -30,23 +29,7 @@ func listFiles(path string) func(string) []string {
 }
 
 var completer = readline.NewPrefixCompleter(
-	readline.PcItem("mode",
-		readline.PcItem("vi"),
-		readline.PcItem("emacs"),
-	),
 	readline.PcItem("login"),
-	readline.PcItem("say",
-		readline.PcItemDynamic(listFiles("./"),
-			readline.PcItem("with",
-				readline.PcItem("following"),
-				readline.PcItem("items"),
-			),
-		),
-		readline.PcItem("hello"),
-		readline.PcItem("bye"),
-	),
-	readline.PcItem("setprompt"),
-	readline.PcItem("setpassword"),
 	readline.PcItem("bye"),
 	readline.PcItem("help"),
 	readline.PcItem("go",
@@ -69,6 +52,9 @@ func filterInput(r rune) (rune, bool) {
 	}
 	return r, true
 }
+
+const RetContinue = 0
+const RetExit = 1
 
 func parseLine(line string) (string, string, string){
 	words := []string{"","",""}
@@ -100,7 +86,7 @@ func cmdPut(path string, body string) {
 	println("curl -X PUT " + path + " -d " + body)
 }
 
-func processLine(l *readline.Instance, setPasswordCfg *readline.Config, line string) {
+func processLine(l *readline.Instance, line string) int {
 	cmd, arg1, arg2 := parseLine(line)
 	log.Printf("%s:%s:%s", cmd,arg1,arg2)
 	switch {
@@ -136,44 +122,33 @@ func processLine(l *readline.Instance, setPasswordCfg *readline.Config, line str
 		}
 		println("you enter:", strconv.Quote(string(pswd)))
 	case line == "help":
-		usage(l.Stderr())
-	case line == "setpassword":
-		pswd, err := l.ReadPasswordWithConfig(setPasswordCfg)
-		if err == nil {
-			println("you set:", strconv.Quote(string(pswd)))
-		}
+		help(l.Stderr())
 	case strings.HasPrefix(line, "setprompt"):
 		if len(line) <= 10 {
 			log.Println("setprompt <prompt>")
 			break
 		}
 		l.SetPrompt(line[10:])
-	case strings.HasPrefix(line, "say"):
-		line := strings.TrimSpace(line[3:])
-		if len(line) == 0 {
-			log.Println("say what?")
-			break
-		}
-		go func() {
-			for range time.Tick(time.Second) {
-				log.Println(line)
-			}
-		}()
 	case line == "bye":
-		return
+		return RetExit
 	case line == "sleep":
 		log.Println("sleep 4 second")
 		time.Sleep(4 * time.Second)
 	case line == "":
 	default:
-		log.Println("you said:", strconv.Quote(line))
+		log.Println("command not found:", strconv.Quote(line))
 	}
 
+	return RetContinue
 }
+
+const Prompt = "\033[31mcurl-shell>\033[0m "
+const HistoryFile = "/tmp/curl-shell.history"
+
 func main() {
 	l, err := readline.NewEx(&readline.Config{
-		Prompt:          "\033[31m»\033[0m ",
-		HistoryFile:     "/tmp/readline.tmp",
+		Prompt:          Prompt,
+		HistoryFile:     HistoryFile,
 		AutoComplete:    completer,
 		InterruptPrompt: "^C",
 		EOFPrompt:       "exit",
@@ -185,13 +160,6 @@ func main() {
 		panic(err)
 	}
 	defer l.Close()
-
-	setPasswordCfg := l.GenPasswordConfig()
-	setPasswordCfg.SetListener(func(line []rune, pos int, key rune) (newLine []rune, newPos int, ok bool) {
-		l.SetPrompt(fmt.Sprintf("Enter password(%v): ", len(line)))
-		l.Refresh()
-		return nil, 0, false
-	})
 
 	log.SetOutput(l.Stderr())
 	for {
@@ -207,6 +175,9 @@ func main() {
 		}
 
 		line = strings.TrimSpace(line)
-		processLine(l,setPasswordCfg, line)
+		ret := processLine(l, line)
+		if ret == RetExit {
+			return
+		}
 	}
 }
