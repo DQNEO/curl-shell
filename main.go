@@ -109,19 +109,19 @@ func processLine(l *readline.Instance, line string) int {
 		default:
 			println("invalid mode:", line[5:])
 		}
-	case line == "mode":
+	case cmd == "mode":
 		if l.IsVimMode() {
 			println("current mode: vim")
 		} else {
 			println("current mode: emacs")
 		}
-	case line == "login":
+	case cmd == "login":
 		pswd, err := l.ReadPassword("please enter your password: ")
 		if err != nil {
 			break
 		}
 		println("you enter:", strconv.Quote(string(pswd)))
-	case line == "help":
+	case cmd == "help":
 		help(l.Stderr())
 	case strings.HasPrefix(line, "setprompt"):
 		if len(line) <= 10 {
@@ -129,12 +129,12 @@ func processLine(l *readline.Instance, line string) int {
 			break
 		}
 		l.SetPrompt(line[10:])
-	case line == "bye":
+	case cmd == "bye":
 		return RetExit
-	case line == "sleep":
+	case cmd == "sleep":
 		log.Println("sleep 4 second")
 		time.Sleep(4 * time.Second)
-	case line == "":
+	case cmd == "":
 	default:
 		log.Println("command not found:", strconv.Quote(line))
 	}
