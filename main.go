@@ -6,9 +6,9 @@ import (
 	"log"
 	"strconv"
 	"strings"
-	"time"
-
 	"github.com/chzyer/readline"
+	"os/exec"
+	"fmt"
 )
 
 func help(w io.Writer) {
@@ -70,20 +70,39 @@ func parseLine(line string) (string, string, string){
 	}
 }
 
+func execCurl(method string, path string, args string) string {
+	url := baseUrl + path
+	fmt.Printf("curl -X %s %s\n", method, url)
+	var cmd *exec.Cmd
+
+	if args != "" {
+		cmd = exec.Command("curl", "-X", method, "-H", "Content-type: application/json", "-d", args, url)
+	} else {
+		cmd = exec.Command("curl", "-X", method, url)
+	}
+	byts, err := cmd.Output()
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+	out := string(byts)
+	fmt.Printf(out)
+	return out
+}
+
 func cmdGet(path string) {
-	println("GET " + path)
+	execCurl("GET", path,"")
 }
 
 func cmdDelete(path string) {
-	println("GET " + path)
+	execCurl("DELETE", path, "")
 }
 
 func cmdPost(path string, body string) {
-	println("curl -X POST " + path + " -d " + body)
+	execCurl("POST", path, body)
 }
 
 func cmdPut(path string, body string) {
-	println("curl -X PUT " + path + " -d " + body)
+	execCurl("PUT", path, body)
 }
 
 var baseUrl string
