@@ -100,18 +100,6 @@ func processLine(l *readline.Instance, line string) int {
 	case cmd == "put":
 		cmdPut(arg1, arg2)
 		println("PUT ")
-	case strings.HasPrefix(line, "mode "):
-		switch line[5:] {
-		case "vi":
-			l.SetVimMode(true)
-		case "emacs":
-			l.SetVimMode(false)
-		default:
-			println("invalid mode:", line[5:])
-		}
-	case cmd == "mode":
-		if l.IsVimMode() {
-			println("current mode: vim")
 		} else {
 			println("current mode: emacs")
 		}
