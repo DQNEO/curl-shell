@@ -74,12 +74,15 @@ func execCurl(method string, path string, body string) string {
 	url := baseUrl + path
 	fmt.Printf("curl -X %s %s\n", method, url)
 	var cmd *exec.Cmd
+	var args []string
 
 	if body != "" {
-		cmd = exec.Command("curl", "-X", method, "-H", "Content-type: application/json", "-d", body, url)
+		args = []string{"-X", method, "-H", "Content-type: application/json", "-d", body, url}
 	} else {
-		cmd = exec.Command("curl", "-X", method, url)
+		args = []string{"-X", method, url}
 	}
+
+	cmd = exec.Command("curl", args...)
 	byts, err := cmd.Output()
 	if err != nil {
 		fmt.Printf(err.Error())
