@@ -105,6 +105,16 @@ func cmdPut(path string, body string) {
 	execCurl("PUT", path, body)
 }
 
+var mHeaders map[string]string
+
+func cmdHeader(key string, value string) {
+	if value != "" {
+		mHeaders[key] = value
+	} else {
+		println(mHeaders[key])
+	}
+}
+
 func cmdStatus() {
 	println("base-url: " + baseUrl)
 
@@ -130,6 +140,8 @@ func processLine(l *readline.Instance, line string) int {
 		} else {
 			println(baseUrl)
 		}
+	case cmd == "header":
+		cmdHeader(arg1, arg2)
 	case cmd == "status":
 		cmdStatus()
 	case cmd == "help":
@@ -148,6 +160,8 @@ const Prompt = "\033[31mcurl-shell>\033[0m "
 const HistoryFile = "/tmp/curl-shell.history"
 
 func main() {
+	mHeaders = make(map[string]string)
+
 	l, err := readline.NewEx(&readline.Config{
 		Prompt:          Prompt,
 		HistoryFile:     HistoryFile,
