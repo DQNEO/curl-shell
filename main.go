@@ -111,17 +111,8 @@ func processLine(l *readline.Instance, line string) int {
 		println("you enter:", strconv.Quote(string(pswd)))
 	case cmd == "help":
 		help(l.Stderr())
-	case strings.HasPrefix(line, "setprompt"):
-		if len(line) <= 10 {
-			log.Println("setprompt <prompt>")
-			break
-		}
-		l.SetPrompt(line[10:])
 	case cmd == "bye":
 		return RetExit
-	case cmd == "sleep":
-		log.Println("sleep 4 second")
-		time.Sleep(4 * time.Second)
 	case cmd == "":
 	default:
 		log.Println("command not found:", strconv.Quote(line))
