@@ -42,4 +42,9 @@ Set header
 > header User-Agent 'My Super Agent'
 ```
 
+Show header
 
+```
+> header User-Agent
+'My Super Agent'
+```
