@@ -70,13 +70,13 @@ func parseLine(line string) (string, string, string){
 	}
 }
 
-func execCurl(method string, path string, args string) string {
+func execCurl(method string, path string, body string) string {
 	url := baseUrl + path
 	fmt.Printf("curl -X %s %s\n", method, url)
 	var cmd *exec.Cmd
 
-	if args != "" {
-		cmd = exec.Command("curl", "-X", method, "-H", "Content-type: application/json", "-d", args, url)
+	if body != "" {
+		cmd = exec.Command("curl", "-X", method, "-H", "Content-type: application/json", "-d", body, url)
 	} else {
 		cmd = exec.Command("curl", "-X", method, url)
 	}
