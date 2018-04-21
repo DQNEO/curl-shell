@@ -86,6 +86,8 @@ func cmdPut(path string, body string) {
 	println("curl -X PUT " + path + " -d " + body)
 }
 
+var baseUrl string
+
 func processLine(l *readline.Instance, line string) int {
 	cmd, arg1, arg2 := parseLine(line)
 	log.Printf("%s:%s:%s", cmd,arg1,arg2)
@@ -100,15 +102,12 @@ func processLine(l *readline.Instance, line string) int {
 	case cmd == "put":
 		cmdPut(arg1, arg2)
 		println("PUT ")
+	case cmd == "base-url":
+		if arg1 != "" {
+			baseUrl = arg1
 		} else {
-			println("current mode: emacs")
+			println(baseUrl)
 		}
-	case cmd == "login":
-		pswd, err := l.ReadPassword("please enter your password: ")
-		if err != nil {
-			break
-		}
-		println("you enter:", strconv.Quote(string(pswd)))
 	case cmd == "help":
 		help(l.Stderr())
 	case cmd == "bye":
