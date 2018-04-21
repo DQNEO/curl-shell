@@ -77,11 +77,17 @@ func execCurl(method string, path string, body string) string {
 	var args []string
 
 	if body != "" {
-		args = []string{"-X", method, "-H", "Content-type: application/json", "-d", body, url}
+		args = []string{"-X", method, "-H", "Content-type: application/json", "-d", body}
 	} else {
-		args = []string{"-X", method, url}
+		args = []string{"-X", method}
 	}
 
+	for k,v := range mHeaders {
+		h := fmt.Sprintf("%s: %s", k, v)
+		args = append(args, "-H", h)
+	}
+
+	args = append(args, url)
 	cmd = exec.Command("curl", args...)
 	byts, err := cmd.Output()
 	if err != nil {
@@ -120,7 +126,9 @@ func cmdHeader(key string, value string) {
 
 func cmdStatus() {
 	println("base-url: " + baseUrl)
-
+	for k,v := range mHeaders {
+		fmt.Printf("%s => %s\n", k, v)
+	}
 }
 
 var baseUrl string
