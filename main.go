@@ -105,6 +105,11 @@ func cmdPut(path string, body string) {
 	execCurl("PUT", path, body)
 }
 
+func cmdStatus() {
+	println("base-url: " + baseUrl)
+
+}
+
 var baseUrl string
 
 func processLine(l *readline.Instance, line string) int {
@@ -125,6 +130,8 @@ func processLine(l *readline.Instance, line string) int {
 		} else {
 			println(baseUrl)
 		}
+	case cmd == "status":
+		cmdStatus()
 	case cmd == "help":
 		help(l.Stderr())
 	case cmd == "bye":
