@@ -1,0 +1,5 @@
+* parse request body more nicely (currently, it cannot handle spaces properly)
+* store state (e.g. base-url and headers) to local file system
+* enable to set headers
+* "status" command
+*

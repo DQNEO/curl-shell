@@ -117,10 +117,8 @@ func processLine(l *readline.Instance, line string) int {
 		cmdDelete(arg1)
 	case cmd == "post":
 		cmdPost(arg1, arg2)
-		println("POST ")
 	case cmd == "put":
 		cmdPut(arg1, arg2)
-		println("PUT ")
 	case cmd == "base-url":
 		if arg1 != "" {
 			baseUrl = arg1
