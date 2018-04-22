@@ -9,6 +9,8 @@ import (
 	"github.com/chzyer/readline"
 	"os/exec"
 	"fmt"
+	"encoding/json"
+	"os"
 )
 
 func help(w io.Writer) {
@@ -174,6 +176,23 @@ func processLine(l *readline.Instance, line string) int {
 
 const Prompt = "\033[31mcurl-shell>\033[0m "
 const HistoryFile = "/tmp/curl-shell.history"
+const StateFile = "/tmp/curl-shell.state"
+func check(e error) {
+	if e != nil {
+		panic(e)
+	}
+}
+
+func persistState(s state) {
+	bytes, _ := json.Marshal(s)
+	f, err := os.Create(StateFile)
+	defer f.Close()
+	check(err)
+	_, err = f.Write(bytes)
+	check(err)
+
+	fmt.Printf("save to %s\n%s\n", StateFile, string(bytes))
+}
 
 func main() {
 	s.Headers = make(map[string]string)
@@ -209,6 +228,7 @@ func main() {
 		line = strings.TrimSpace(line)
 		ret := processLine(l, line)
 		if ret == RetExit {
+			persistState(s)
 			return
 		}
 	}
