@@ -71,7 +71,7 @@ func parseLine(line string) (string, string, string){
 }
 
 func execCurl(method string, path string, body string) string {
-	url := baseUrl + path
+	url := s.baseUrl + path
 	fmt.Printf("curl -X %s %s\n", method, url)
 	var cmd *exec.Cmd
 	var args []string
@@ -82,7 +82,7 @@ func execCurl(method string, path string, body string) string {
 		args = []string{"-X", method}
 	}
 
-	for k,v := range mHeaders {
+	for k,v := range s.headers {
 		h := fmt.Sprintf("%s: %s", k, v)
 		args = append(args, "-H", h)
 	}
@@ -114,24 +114,27 @@ func cmdPut(path string, body string) {
 	execCurl("PUT", path, body)
 }
 
-var mHeaders map[string]string
+type state struct {
+	baseUrl string
+	headers map[string]string
+}
+
+var s state
 
 func cmdHeader(key string, value string) {
 	if value != "" {
-		mHeaders[key] = value
+		s.headers[key] = value
 	} else {
-		println(mHeaders[key])
+		println(s.headers[key])
 	}
 }
 
 func cmdStatus() {
-	println("base-url: " + baseUrl)
-	for k,v := range mHeaders {
+	println("base-url: " + s.baseUrl)
+	for k,v := range s.headers {
 		fmt.Printf("%s => %s\n", k, v)
 	}
 }
-
-var baseUrl string
 
 func processLine(l *readline.Instance, line string) int {
 	cmd, arg1, arg2 := parseLine(line)
@@ -147,9 +150,9 @@ func processLine(l *readline.Instance, line string) int {
 		cmdPut(arg1, arg2)
 	case cmd == "base-url":
 		if arg1 != "" {
-			baseUrl = arg1
+			s.baseUrl = arg1
 		} else {
-			println(baseUrl)
+			println(s.baseUrl)
 		}
 	case cmd == "header":
 		cmdHeader(arg1, arg2)
@@ -171,7 +174,7 @@ const Prompt = "\033[31mcurl-shell>\033[0m "
 const HistoryFile = "/tmp/curl-shell.history"
 
 func main() {
-	mHeaders = make(map[string]string)
+	s.headers = make(map[string]string)
 
 	l, err := readline.NewEx(&readline.Config{
 		Prompt:          Prompt,
