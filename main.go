@@ -160,6 +160,8 @@ func processLine(l *readline.Instance, line string) int {
 		cmdStatus()
 	case cmd == "help":
 		help(l.Stderr())
+	case cmd == "exit":
+		return RetExit
 	case cmd == "bye":
 		return RetExit
 	case cmd == "":
