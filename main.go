@@ -1,16 +1,16 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
+	"github.com/chzyer/readline"
 	"io"
 	"io/ioutil"
 	"log"
+	"os"
+	"os/exec"
 	"strconv"
 	"strings"
-	"github.com/chzyer/readline"
-	"os/exec"
-	"fmt"
-	"encoding/json"
-	"os"
 )
 
 func help(w io.Writer) {
@@ -58,17 +58,17 @@ func filterInput(r rune) (rune, bool) {
 const RetContinue = 0
 const RetExit = 1
 
-func parseLine(line string) (string, string, string){
-	words := []string{"","",""}
+func parseLine(line string) (string, string, string) {
+	words := []string{"", "", ""}
 	words = strings.Split(line, " ")
 	if len(words) == 1 {
 		return words[0], "", ""
 	} else if len(words) == 2 {
 		return words[0], words[1], ""
 	} else if len(words) == 3 {
-		return words[0],words[1],words[2]
+		return words[0], words[1], words[2]
 	} else {
-		return words[0],words[1],words[2]
+		return words[0], words[1], words[2]
 	}
 }
 
@@ -84,7 +84,7 @@ func execCurl(method string, path string, body string) string {
 		args = []string{"-X", method}
 	}
 
-	for k,v := range s.Headers {
+	for k, v := range s.Headers {
 		h := fmt.Sprintf("%s: %s", k, v)
 		args = append(args, "-H", h)
 	}
@@ -101,7 +101,7 @@ func execCurl(method string, path string, body string) string {
 }
 
 func cmdGet(path string) {
-	execCurl("GET", path,"")
+	execCurl("GET", path, "")
 }
 
 func cmdDelete(path string) {
@@ -133,14 +133,14 @@ func cmdHeader(key string, value string) {
 
 func cmdStatus() {
 	println("base-url: " + s.BaseURL)
-	for k,v := range s.Headers {
+	for k, v := range s.Headers {
 		fmt.Printf("%s => %s\n", k, v)
 	}
 }
 
 func processLine(l *readline.Instance, line string) int {
 	cmd, arg1, arg2 := parseLine(line)
-	log.Printf("%s:%s:%s", cmd,arg1,arg2)
+	log.Printf("%s:%s:%s", cmd, arg1, arg2)
 	switch {
 	case cmd == "get":
 		cmdGet(arg1)
@@ -177,6 +177,7 @@ func processLine(l *readline.Instance, line string) int {
 const Prompt = "\033[31mcurl-shell>\033[0m "
 const HistoryFile = "/tmp/curl-shell.history"
 const StateFile = "/tmp/curl-shell.state"
+
 func check(e error) {
 	if e != nil {
 		panic(e)
