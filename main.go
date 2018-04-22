@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"io/ioutil"
 )
 
 func help(w io.Writer) {
@@ -182,9 +183,20 @@ func persistState(s state) {
 	fmt.Printf("save to %s\n%s\n", StateFile, string(bytes))
 }
 
-func main() {
-	s.Headers = make(map[string]string)
+func restoreState() state {
+	b,err := ioutil.ReadFile(StateFile)
+	check(err)
+	var st state
+	err = json.Unmarshal(b,&st)
+	check(err)
+	if st.Headers == nil {
+		st.Headers = make(map[string]string)
+	}
+	return st
+}
 
+func main() {
+	s = restoreState()
 	l, err := readline.NewEx(&readline.Config{
 		Prompt:          Prompt,
 		HistoryFile:     HistoryFile,
